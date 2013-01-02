@@ -1,0 +1,21 @@
+# - Config file for the CudaLBFGS package
+# It defines the following variables
+#  CUDALBFGS_INCLUDE_DIRS - include directories for CudaLBFGS
+#  CUDALBFGS_LIBRARIES    - libraries to link against
+ 
+# Compute paths
+get_filename_component(CUDALBFGS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(CUDALBFGS_INCLUDE_DIRS "${CUDALBFGS_CMAKE_DIR}/@CONF_REL_INCLUDE_DIR@")
+
+if(EXISTS "${CUDALBFGS_CMAKE_DIR}/CMakeCache.txt")
+   # In build tree
+   include("${CUDALBFGS_CMAKE_DIR}/CudaLBFGSBuildTreeSettings.cmake")
+else()
+   set(CUDALBFGS_INCLUDE_DIRS "${CUDALBFGS_CMAKE_DIR}/@CONF_REL_INCLUDE_DIR@")
+endif()
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${CUDALBFGS_CMAKE_DIR}/CudaLBFGSLibraryDepends.cmake")
+ 
+# These are IMPORTED targets created by CudaLBFGSLibraryDepends.cmake
+set(CUDALBFGS_LIBRARIES lbfgs)

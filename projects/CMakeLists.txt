@@ -1,0 +1,3 @@
+add_subdirectory(parabola)
+add_subdirectory(quadratic)
+add_subdirectory(rosenbrock)

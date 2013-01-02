@@ -1,0 +1,21 @@
+cuda_add_executable(quadratic_test_cpu quadratic_test_cpu.cu)
+target_link_libraries(quadratic_test_cpu lbfgs)
+cuda_add_executable(quadratic_test_gpu_gpu quadratic_test_gpu_gpu.cu)
+target_link_libraries(quadratic_test_gpu_gpu lbfgs)
+cuda_add_executable(quadratic_test_gpu_host quadratic_test_gpu_host.cu)
+target_link_libraries(quadratic_test_gpu_host lbfgs)
+
+cuda_add_executable(rosenbrock_test_cpu rosenbrock_test_cpu.cu)
+target_link_libraries(rosenbrock_test_cpu lbfgs)
+cuda_add_executable(rosenbrock_test_gpu_gpu rosenbrock_test_gpu_gpu.cu)
+target_link_libraries(rosenbrock_test_gpu_gpu lbfgs)
+cuda_add_executable(rosenbrock_test_gpu_host rosenbrock_test_gpu_host.cu)
+target_link_libraries(rosenbrock_test_gpu_host lbfgs)
+
+add_test(quadratic_cpu ${EXECUTABLE_OUTPUT_PATH}/quadratic_test_cpu)
+add_test(quadratic_gpu_gpu ${EXECUTABLE_OUTPUT_PATH}/quadratic_test_gpu_gpu)
+add_test(quadratic_gpu_host ${EXECUTABLE_OUTPUT_PATH}/quadratic_test_gpu_host)
+add_test(rosenbrock_cpu ${EXECUTABLE_OUTPUT_PATH}/rosenbrock_test_cpu)
+add_test(rosenbrock_gpu_gpu ${EXECUTABLE_OUTPUT_PATH}/rosenbrock_test_gpu_gpu)
+add_test(rosenbrock_gpu_host ${EXECUTABLE_OUTPUT_PATH}/rosenbrock_test_gpu_host)
+

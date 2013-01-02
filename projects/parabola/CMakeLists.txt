@@ -1,0 +1,2 @@
+cuda_add_executable(parabola parabola.cu)
+target_link_libraries(parabola lbfgs)
