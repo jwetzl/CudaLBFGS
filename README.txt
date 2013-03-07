@@ -15,9 +15,21 @@ http://creativecommons.org/licenses/by/3.0/
 The CUDA L-BFGS library offers GPU based nonlinear
 minimization implementing the L-BFGS method in CUDA.
 
-==========================================
+There is no publication available that covers this 
+library exclusively, but you may consider citing the 
+paper it was introduced in:
+
+Wetzl, J., Taubmann, O., Haase, S., Köhler, T., 
+Kraus, M., and Hornegger, J. (2013). GPU-Accelerated 
+Time-of-Flight Super-Resolution for Image-Guided 
+Surgery. In Meinzer, H.-P., Deserno, T. M., Handels, 
+H., and Tolxdorff, T., editors, Bildverarbeitung für 
+die Medizin 2013, Informatik aktuell, pages 21–26. 
+Springer Berlin Heidelberg.
+
+====================================================
   BUILDING
-==========================================
+====================================================
 
 To build (and, if desired, install) the library,
 you will need CMake (http://cmake.org). The default
@@ -34,9 +46,9 @@ are lots of options, e.g. you can
 - build example projects that demonstrate how the
   library is used (cf. /projects directory).
 
-==========================================
+====================================================
   INCLUDING THE LIBRARY IN YOUR PROJECTS
-==========================================
+====================================================
 
 If you use CMake for your project, including the
 CudaLBFGS library is jaw-droppingly easy. In your 
@@ -53,9 +65,9 @@ standard location, you may also have to set
 either the environment variable CMAKE_PREFIX_PATH
 or the CMake variable CUDALBFGS_DIR.
 
-==========================================
+====================================================
   USAGE
-==========================================
+====================================================
 
 The basic approach can be described as follows:
 
