@@ -115,8 +115,8 @@ public:
 		CudaSafeCall( cudaMemcpy(m_d_b,  b,   n * sizeof(float), cudaMemcpyHostToDevice) );
 		CudaSafeCall(  cudaMemcpy(m_d_c, &c,   1 * sizeof(float), cudaMemcpyHostToDevice));
 
-		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp1, "gpu_quadratic_d::tmp1") );
-		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp2, "gpu_quadratic_d::tmp2") );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp1, gpu_quadratic_d::tmp1) );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp2, gpu_quadratic_d::tmp2) );
 	}
 
 	~gpu_quadratic()
