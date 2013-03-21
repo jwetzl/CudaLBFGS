@@ -70,7 +70,7 @@ bool lbfgs::gpu_linesearch(float *d_x, float *d_z, float *d_fk, float *d_gk,
 		return false;
 	}
 
-	CudaSafeCall( cudaMemcpyToSymbol("gpu_lbfgs::phi_prime_0", &phi_prime_0, sizeof(float)) ); // phi_prime_0 = z' * gk
+	CudaSafeCall( cudaMemcpyToSymbol(gpu_lbfgs::phi_prime_0, &phi_prime_0, sizeof(float)) ); // phi_prime_0 = z' * gk
 
 	float *d_alpha_correction, *d_phi_prime_alpha;
 	CudaSafeCall( cudaGetSymbolAddress((void**) &d_alpha_correction, gpu_lbfgs::alpha_correction) );

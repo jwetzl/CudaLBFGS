@@ -151,15 +151,15 @@ lbfgs::status lbfgs::gpu_lbfgs(float *d_x)
 
 	// Addresses of global symbols
 
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_fkm1,  "gpu_lbfgs::fkm1"  ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_fk,    "gpu_lbfgs::fk"    ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_tmp,   "gpu_lbfgs::tmp"   ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_tmp2,  "gpu_lbfgs::tmp2"  ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_H0,    "gpu_lbfgs::H0"    ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_alpha, "gpu_lbfgs::alpha" ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_rho,   "gpu_lbfgs::rho"   ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_step,  "gpu_lbfgs::step"  ) );
-	CudaSafeCall( cudaGetSymbolAddress((void**)&d_status,"gpu_lbfgs::status") );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_fkm1,   gpu_lbfgs::fkm1  ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_fk,     gpu_lbfgs::fk    ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_tmp,    gpu_lbfgs::tmp   ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_tmp2,   gpu_lbfgs::tmp2  ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_H0,     gpu_lbfgs::H0    ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_alpha,  gpu_lbfgs::alpha ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_rho,    gpu_lbfgs::rho   ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_step,   gpu_lbfgs::step  ) );
+	CudaSafeCall( cudaGetSymbolAddress((void**)&d_status, gpu_lbfgs::status) );
 
 	// Initialize
 
