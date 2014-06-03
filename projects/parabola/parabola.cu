@@ -64,13 +64,13 @@ public:
 	gpu_parabola(float a, float b, float c) 
 	: cost_function(1) 
 	{
-		cudaGetSymbolAddress((void**)&m_d_a, "gpu_parabola_d::m_a");
-		cudaGetSymbolAddress((void**)&m_d_b, "gpu_parabola_d::m_b");
-		cudaGetSymbolAddress((void**)&m_d_c, "gpu_parabola_d::m_c");
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_a, gpu_parabola_d::m_a) );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_b, gpu_parabola_d::m_b) );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_c, gpu_parabola_d::m_c) );
 
-		cudaMemcpy(m_d_a, &a, sizeof(float), cudaMemcpyHostToDevice);
-		cudaMemcpy(m_d_b, &b, sizeof(float), cudaMemcpyHostToDevice);
-		cudaMemcpy(m_d_c, &c, sizeof(float), cudaMemcpyHostToDevice);
+		CudaSafeCall( cudaMemcpy(m_d_a, &a, sizeof(float), cudaMemcpyHostToDevice) );
+		CudaSafeCall( cudaMemcpy(m_d_b, &b, sizeof(float), cudaMemcpyHostToDevice) );
+		CudaSafeCall( cudaMemcpy(m_d_c, &c, sizeof(float), cudaMemcpyHostToDevice) );
 	}
 	
 	void f_gradf(const float *d_x, float *d_f, float *d_grad)
@@ -110,8 +110,8 @@ int main(int argc, char **argv)
 	x = 8.0f;
 	
 	float *d_x;
-	cudaMalloc(&d_x, sizeof(float));
-	cudaMemcpy(d_x, &x, sizeof(float), cudaMemcpyHostToDevice);
+	CudaSafeCall( cudaMalloc(&d_x, sizeof(float)) );
+	CudaSafeCall( cudaMemcpy(d_x, &x, sizeof(float), cudaMemcpyHostToDevice) );
 
 	{
 		timer t("parabola_gpu");
@@ -119,7 +119,8 @@ int main(int argc, char **argv)
 		minimizer2.minimize(d_x);
 	}
 
-	cudaMemcpy(&x, d_x, sizeof(float), cudaMemcpyDeviceToHost);
+	CudaSafeCall( cudaMemcpy(&x, d_x, sizeof(float), cudaMemcpyDeviceToHost) );
+	CudaSafeCall( cudaFree(d_x) );
 
 	cout << "GPU Parabola: " << x << endl;
 

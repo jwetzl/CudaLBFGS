@@ -107,28 +107,29 @@ int main(int argc, char **argv)
 	minimizer1.setGradientEpsilon(1e-3f);
 
 	float x[2] = {2.0f, -1.0f};
-	lbfgs::status stat = minimizer1.cpu_lbfgs(x);
-
-	cout << "CPU Rosenbrock: " << x[0] << " " << x[1] << endl;
-	cout << minimizer1.statusToString(stat).c_str() << endl;
+	// lbfgs::status stat = minimizer1.cpu_lbfgs(x);
+	// 
+	// cout << "CPU Rosenbrock: " << x[0] << " " << x[1] << endl;
+	// cout << minimizer1.statusToString(stat).c_str() << endl;
 
 	// GPU
 
-	 gpu_rosenbrock rb2;
-	 lbfgs minimizer2(rb2);
+	gpu_rosenbrock rb2;
+	lbfgs minimizer2(rb2);
 	
-	 x[0] = -4.0f;
-	 x[1] = 2.0f;
+	x[0] = -4.0f;
+	x[1] = 2.0f;
 	
-	 float *d_x;
-	 cudaMalloc(&d_x,    2 * sizeof(float));
-	 cudaMemcpy(d_x, &x, 2 * sizeof(float), cudaMemcpyHostToDevice);
+	float *d_x;
+	CudaSafeCall( cudaMalloc(&d_x,    2 * sizeof(float)) );
+	CudaSafeCall( cudaMemcpy(d_x, &x, 2 * sizeof(float), cudaMemcpyHostToDevice) );
 	
-	 minimizer2.minimize(d_x);
+	minimizer2.minimize(d_x);
 	
-	 cudaMemcpy(&x, d_x, 2 * sizeof(float), cudaMemcpyDeviceToHost);
+	CudaSafeCall( cudaMemcpy(&x, d_x, 2 * sizeof(float), cudaMemcpyDeviceToHost) );
+	CudaSafeCall( cudaFree(d_x) );
 	
-	 cout << "GPU Rosenbrock: " << x[0] << " " << x[1] << endl;
+	cout << "GPU Rosenbrock: " << x[0] << " " << x[1] << endl;
 
 	return 0;
 }

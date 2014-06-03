@@ -182,8 +182,8 @@ public:
 		CudaSafeCall( cudaMemcpy(m_d_b,  b,   n * sizeof(float), cudaMemcpyHostToDevice) );
 		CudaSafeCall( cudaMemcpy(m_d_c, &c,   1 * sizeof(float), cudaMemcpyHostToDevice));
 
-		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp1, "gpu_quadratic_d::tmp1") );
-		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp2, "gpu_quadratic_d::tmp2") );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp1, gpu_quadratic_d::tmp1) );
+		CudaSafeCall( cudaGetSymbolAddress((void**)&m_d_tmp2, gpu_quadratic_d::tmp2) );
 	}
 
 	~gpu_quadratic()
@@ -207,8 +207,8 @@ public:
 		dim3 gridDim_dot((NX % blockDim.x) == 0 ? (NX / blockDim.x)
 												: (NX / blockDim.x) + 1);
 
-		cudaMemset(m_d_tmp1, 0, sizeof(float));
-		cudaMemset(m_d_tmp2, 0, sizeof(float));
+		CudaSafeCall( cudaMemset(m_d_tmp1, 0, sizeof(float)) );
+		CudaSafeCall( cudaMemset(m_d_tmp2, 0, sizeof(float)) );
 
 		gpu_quadratic_d::xAx<<<gridDim_xAx, blockDim>>>(d_x, m_d_A, NX, m_d_tmp1);
 		CudaCheckError();
@@ -330,6 +330,7 @@ int main(int argc, char **argv)
 	cout << lbfgs::statusToString(stat2).c_str() << endl;
 
 	CudaSafeCall( cudaMemcpy(x, d_x, n * sizeof(float), cudaMemcpyDeviceToHost) );
+	CudaSafeCall( cudaFree(d_x) );
 
 	cout << "GPU quadratic:";
 

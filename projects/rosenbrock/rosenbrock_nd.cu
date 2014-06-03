@@ -151,7 +151,7 @@ public:
 		                                          : (launches / blockDim.x) + 1);
 
 		const float zero = 0.0f;
-		cudaMemcpy(d_f, &zero, sizeof(float), cudaMemcpyHostToDevice);
+		CudaSafeCall( cudaMemcpy(d_f, &zero, sizeof(float), cudaMemcpyHostToDevice) );
 		gpu_rosenbrock_d::kernelF<<<gridDim, blockDim>>>(d_x, d_f, d_grad, launches);
 		cudaDeviceSynchronize();
 	}
@@ -162,6 +162,11 @@ private:
 
 int main(int argc, char **argv)
 {
+	if (argc < 2)
+	{
+		std::cerr << "Usage: " << *argv << " number-of-dimensions gradient-epsilon" << std::endl;
+		return 1;
+	}
 	// CPU
 
 	const size_t NX = atoi(argv[1]);
@@ -203,12 +208,13 @@ int main(int argc, char **argv)
 	}
 
 	float *d_x;
-	cudaMalloc(&d_x,    NX * sizeof(float));
-	cudaMemcpy(d_x, x, NX * sizeof(float), cudaMemcpyHostToDevice);
+	CudaSafeCall( cudaMalloc(&d_x,    NX * sizeof(float)) );
+	CudaSafeCall( cudaMemcpy(d_x, x, NX * sizeof(float), cudaMemcpyHostToDevice) );
 
 	stat = minimizer2.minimize(d_x);
 
-	cudaMemcpy(x, d_x, NX * sizeof(float), cudaMemcpyDeviceToHost);
+	CudaSafeCall( cudaMemcpy(x, d_x, NX * sizeof(float), cudaMemcpyDeviceToHost) );
+	CudaSafeCall( cudaFree(d_x) );
 
 	cout << "GPU Rosenbrock: ";
 
@@ -221,7 +227,6 @@ int main(int argc, char **argv)
 	cout << minimizer2.statusToString(stat).c_str() << endl;
 
 	delete [] x;
-	cudaFree(d_x);
 
 	return 0;
 }
