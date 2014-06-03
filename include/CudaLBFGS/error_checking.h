@@ -100,6 +100,11 @@ inline void __cublasSafeCall(cublasStatus_t status, const char* file, const int 
 		case CUBLAS_STATUS_NOT_INITIALIZED:
 			std::cerr << "Not initialized" << std::endl;
 			break;
+		case CUBLAS_STATUS_NOT_SUPPORTED:
+			std::cerr << "Not supported" << std::endl;
+			break;
+		default: // Compiler warning about not handling CUBLAS_STATUS_SUCCESS
+			break;
 		}
 
 		std::exit(EXIT_FAILURE);
@@ -139,6 +144,11 @@ inline void __cusparseSafeCall(cusparseStatus_t status, const char *file, const 
 			break;
 		case CUSPARSE_STATUS_NOT_INITIALIZED:
 			std::cerr << "Not initialized" << std::endl;
+			break;
+		case CUSPARSE_STATUS_ZERO_PIVOT:
+			std::cerr << "Zero pivot" << std::endl;
+			break;
+		default: // Compiler warning about not handling CUSPARSE_STATUS_SUCCESS
 			break;
 		}
 
