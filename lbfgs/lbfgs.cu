@@ -99,13 +99,13 @@ lbfgs::status lbfgs::minimize_with_host_x(float *h_x)
 {
 	 const size_t NX = m_costFunction.getNumberOfUnknowns();
 	 float *d_x;
-	 cudaMalloc((void**)&d_x, NX * sizeof(float));
-	 cudaMemcpy(d_x, h_x, NX * sizeof(float), cudaMemcpyHostToDevice);
+	 CudaSafeCall( cudaMalloc((void**)&d_x, NX * sizeof(float)) );
+	 CudaSafeCall( cudaMemcpy(d_x, h_x, NX * sizeof(float), cudaMemcpyHostToDevice) );
 
 	 status ret = minimize(d_x);
 
-	 cudaMemcpy(h_x, d_x, NX * sizeof(float), cudaMemcpyDeviceToHost);
-	 cudaFree(d_x);
+	 CudaSafeCall( cudaMemcpy(h_x, d_x, NX * sizeof(float), cudaMemcpyDeviceToHost) );
+	 CudaSafeCall( cudaFree(d_x) );
 
 	 return ret;
 }
