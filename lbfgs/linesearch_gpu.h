@@ -22,6 +22,9 @@
 #include "timer.h"
 #include "lbfgs.h"
 
+#include <fstream>
+#include <sstream>
+
 namespace gpu_lbfgs
 {
 	// Step, function value and directional derivative at the
@@ -63,9 +66,32 @@ bool lbfgs::gpu_linesearch(float *d_x, float *d_z, float *d_fk, float *d_gk,
 	float phi_prime_0;
 
 	dispatch_dot(NX, &phi_prime_0, d_z, d_gk, false); // phi_prime_0 = z' * gk
+	
+#ifdef LBFGS_VERBOSE
+	// Enable line search debugging
+	static int iteration = 0;
+	
+	std::stringstream fnStream;
+	fnStream << "linesearch_iteration_" << iteration++ << ".txt";
+	
+	std::ofstream linesearchOutput(fnStream.str().c_str());
+	if (!linesearchOutput)
+	{
+		std::cerr << "Could not write linesearch log to '" << fnStream.str() << "'." << std::endl;
+		exit(1);
+	}
+	
+	float fk;
+	CudaSafeCall( cudaMemcpy(&fk, d_fk, sizeof(float), cudaMemcpyDeviceToHost) );
+	
+	linesearchOutput << "0 " << fk << " " << phi_prime_0 << std::endl;
+#endif
 
 	if (phi_prime_0 >= 0.0)
 	{
+#ifdef LBFGS_VERBOSE
+		std::cout << "Directional derivative at the starting point of the line search is nonnegative." << std::endl;
+#endif
 		stat = lbfgs::LBFGS_LINE_SEARCH_FAILED;
 		return false;
 	}
@@ -109,8 +135,17 @@ bool lbfgs::gpu_linesearch(float *d_x, float *d_z, float *d_fk, float *d_gk,
 		timer_evals->stop();
 		timer_linesearch->start();
 #endif
-
+		
 		dispatch_dot(NX, d_phi_prime_alpha, d_z, d_gk, true); // phi_prime_alpha = z' * gk;
+
+#ifdef LBFGS_VERBOSE
+		float alpha, phi_prime_alpha;
+		CudaSafeCall( cudaMemcpyFromSymbol(&alpha, gpu_lbfgs::alpha_cur, sizeof(float)) );
+		CudaSafeCall( cudaMemcpy(&fk, d_fk, sizeof(float), cudaMemcpyDeviceToHost) );
+		CudaSafeCall( cudaMemcpy(&phi_prime_alpha, d_phi_prime_alpha, sizeof(float), cudaMemcpyDeviceToHost) );
+		
+		linesearchOutput << alpha << " " << fk << " " << phi_prime_alpha << std::endl;
+#endif
 
 		strongWolfePhase1<<<1,1>>>(second_iter);
 
@@ -176,8 +211,17 @@ bool lbfgs::gpu_linesearch(float *d_x, float *d_z, float *d_fk, float *d_gk,
 		timer_evals->stop();
 		timer_linesearch->start();
 #endif
-
+		
 		dispatch_dot(NX, d_tmp, d_z, d_gk, true); // tmp = phi_prime_j = z' * gk;
+		
+#ifdef LBFGS_VERBOSE
+		float alpha, phi_prime_alpha;
+		CudaSafeCall( cudaMemcpyFromSymbol(&alpha, gpu_lbfgs::alpha_cur, sizeof(float)) );
+		CudaSafeCall( cudaMemcpy(&fk, d_fk, sizeof(float), cudaMemcpyDeviceToHost) );
+		CudaSafeCall( cudaMemcpy(&phi_prime_alpha, d_tmp, sizeof(float), cudaMemcpyDeviceToHost) );
+		
+		linesearchOutput << alpha << " " << fk << " " << phi_prime_alpha << std::endl;
+#endif
 
 		strongWolfePhase2<<<1,1>>>(tries);
 
