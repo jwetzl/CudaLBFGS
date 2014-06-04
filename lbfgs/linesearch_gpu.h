@@ -256,14 +256,36 @@ bool lbfgs::gpu_linesearch(float *d_x, float *d_z, float *d_fk, float *d_gk,
 
 namespace gpu_lbfgs
 {
+	// If there are frequent 'line search failed' problems *and* you
+	// have made certain that there is no bug in the gradient directions
+	// returned by your cost function, a weaker criterion for the points
+	// found by the line search can be used. The so-called approximate
+	// Wolfe condition replaces the first strong Wolfe condition.
+	// 
+	// This should not be used by default, only in situations where
+	// characteristics of the cost function don't allow the use of
+	// the strong Wolfe conditions. More function evaluations may be
+	// necessary to find a minimum with the approximate Wolfe condition.
+	//
+	// cf. https://www.math.lsu.edu/~hozhang/papers/cg_descent.pdf
+	__device__ bool sufficientDecrease(float phi_0_, float phi_prime_0_, float phi_alpha_, float phi_prime_alpha_, float alpha_cur_)
+	{
+#ifndef APPROXIMATE_WOLFE
+		const float c1 = 1e-4f;
+		return phi_alpha_ > phi_0_ + c1 * alpha_cur_ * phi_prime_0_;
+#else
+		const float c1 = 0.1f;
+		return phi_prime_alpha_ > (2.0f * c1 - 1.0f) * phi_prime_0_;
+#endif
+	}
+	
 	__global__ void strongWolfePhase1(bool second_iter)
 	{
-		const float c1 = 1e-4f;
 		const float c2 = 0.9f;
 
 		const float phi_alpha = fk;
 
-		const bool armijo_violated = (phi_alpha > fkm1 + c1 * alpha_cur * phi_prime_0 || (second_iter && phi_alpha >= fkm1));
+		const bool armijo_violated = (sufficientDecrease(fkm1, phi_prime_0, phi_alpha, phi_prime_alpha, alpha_cur) || (second_iter && phi_alpha >= fkm1));
 		const bool strong_wolfe    = (fabsf(phi_prime_alpha) <= -c2 * phi_prime_0);
 
 		// If both Armijo and Strong Wolfe hold, we're done
@@ -341,7 +363,6 @@ namespace gpu_lbfgs
 
 	__global__ void strongWolfePhase2(size_t tries)
 	{
-		const float c1 = 1e-4f;
 		const float c2 = 0.9f;
 
 		const size_t minTries = 10;
@@ -350,7 +371,7 @@ namespace gpu_lbfgs
 		const float phi_j       = fk;
 		const float phi_prime_j = tmp;
 
-		const bool armijo_violated = (phi_j > phi_0 + c1 * alpha_cur * phi_prime_0 || phi_j >= phi_low);
+		const bool armijo_violated = (sufficientDecrease(phi_0, phi_prime_0, phi_j, phi_prime_j, alpha_cur) || phi_j >= phi_low);
 		const bool strong_wolfe    = (fabsf(phi_prime_j) <= -c2 * phi_prime_0);
 
 		if (!armijo_violated && strong_wolfe)

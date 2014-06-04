@@ -10,7 +10,7 @@ endif()
 option(LBFGS_TIMING "Enable timing for LBFGS.")
 
 if (LBFGS_TIMING)
-        add_definitions(-DLBFGS_TIMING)
+	add_definitions(-DLBFGS_TIMING)
 endif()
 
 # ---
@@ -18,7 +18,7 @@ endif()
 option(LBFGS_VERBOSE "Print verbose debug output for L-BFGS library.")
 
 if (LBFGS_VERBOSE)
-        add_definitions(-DLBFGS_VERBOSE)
+	add_definitions(-DLBFGS_VERBOSE)
 endif()
 
 # ---
@@ -26,9 +26,9 @@ endif()
 option(LBFGS_BUILD_CPU_IMPLEMENTATION "Build CPU implementation (requires Eigen).")
 
 if (LBFGS_BUILD_CPU_IMPLEMENTATION)
-        find_package(Eigen REQUIRED)
-        include_directories(${Eigen_INCLUDE_DIRS})
-        add_definitions(-DLBFGS_BUILD_CPU_IMPLEMENTATION)
+	find_package(Eigen REQUIRED)
+	include_directories(${Eigen_INCLUDE_DIRS})
+	add_definitions(-DLBFGS_BUILD_CPU_IMPLEMENTATION)
 endif()
 
 # ---
@@ -36,7 +36,16 @@ endif()
 option(LBFGS_CUDA_ERROR_CHECK "Enable CUDA error checking.")
 
 if (LBFGS_CUDA_ERROR_CHECK)
-        add_definitions(-DLBFGS_CUDA_ERROR_CHECK)
+	add_definitions(-DLBFGS_CUDA_ERROR_CHECK)
+endif()
+
+# ---
+
+option(LBFGS_APPROXIMATE_WOLFE "Use approximate Wolfe conditions instead of strong Wolfe (see linesearch_gpu.h)." OFF)
+
+if (LBFGS_APPROXIMATE_WOLFE)
+	message(STATUS "Compiling with approximate Wolfe conditions. Please read the comment in linesearch_gpu.h to be sure you really want to do this.")
+	add_definitions(-DAPPROXIMATE_WOLFE)
 endif()
 
 # ---
@@ -124,6 +133,6 @@ install(FILES ${PROJECT_BINARY_DIR}/CudaLBFGSConfigVersion.cmake
 option(UNIT_TESTING "Do unit testing (also enable LBFGS_BUILD_CPU_IMPLEMENTATION!).")
 
 if (UNIT_TESTING AND LBFGS_BUILD_CPU_IMPLEMENTATION)
-        enable_testing()
-        add_subdirectory(tests)
+	enable_testing()
+	add_subdirectory(tests)
 endif()
