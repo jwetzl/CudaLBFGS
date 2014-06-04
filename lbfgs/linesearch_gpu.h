@@ -308,6 +308,12 @@ namespace gpu_lbfgs
 
 			alpha_cur  = 0.5f * (alpha_low + alpha_high);
 			alpha_cur += (phi_high - phi_low) / (phi_prime_low - phi_prime_high);
+			
+			if (isnan(alpha_cur))
+			{
+				status = 3;
+				return;
+			}
 
 			if (alpha_cur < fminf(alpha_low, alpha_high) || alpha_cur > fmaxf(alpha_low, alpha_high))
 				alpha_cur = 0.5f * (alpha_low + alpha_high);
@@ -390,6 +396,12 @@ namespace gpu_lbfgs
 
 		alpha_cur  = 0.5f * (alpha_low + alpha_high);
 		alpha_cur += (phi_high - phi_low) / (phi_prime_low - phi_prime_high);
+		
+		if (isnan(alpha_cur))
+		{
+			status = 2;
+			return;
+		}
 
 		if (alpha_cur < fminf(alpha_low, alpha_high) || alpha_cur > fmaxf(alpha_low, alpha_high))
 			alpha_cur = 0.5f * (alpha_low + alpha_high);
@@ -401,4 +413,3 @@ namespace gpu_lbfgs
 }
 
 #endif // LINESEARCH_GPU_H
-
