@@ -19,6 +19,7 @@
 #include "timer.h"
 
 #include <iostream>
+#include <algorithm>
 #include <limits>
 #include <cuda.h>
 #include <cuda_runtime.h>
